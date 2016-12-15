@@ -55,5 +55,5 @@ module.exports = {
     externals: {
         "phaser": "Phaser"
     },
-    devtool: "#eval-source-map"
+    devtool: "#source-map"
 };

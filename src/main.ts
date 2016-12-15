@@ -4,6 +4,7 @@ import * as Phaser from "phaser";
 import {BootState} from "states/Boot";
 import {SplashState} from "states/Splash";
 import {GameState} from "states/Game";
+import {PitchDetect} from "audio/PitchDetect";
 
 class Game extends Phaser.Game {
     constructor () {
@@ -18,3 +19,4 @@ class Game extends Phaser.Game {
 }
 
 const game = new Game();
+const pitchDetect = new PitchDetect();
