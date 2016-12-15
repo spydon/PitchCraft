@@ -8,6 +8,7 @@ export class PitchDetect {
     static sourceAudioNode;
     static analyserAudioNode: AnalyserNode;
     static baseFreq = 440;
+    static lastGoodNote;
     static currentNoteIndex = 57; // A4
     static isMicrophoneInUse = false;
 
@@ -32,6 +33,15 @@ export class PitchDetect {
                                   navigator.msGetUserMedia);
         return ((navigator.mediaDevices != null && navigator.mediaDevices.getUserMedia != null) ||
                  navigator.getUserMedia != null);
+    }
+
+    getY (height) {
+        let notes = PitchDetect.notesArray;
+        if (PitchDetect.lastGoodNote) {
+            return (notes.indexOf(PitchDetect.lastGoodNote) / notes.length) * height;
+        } else {
+            return -1;
+        }
     }
 
     findFundamentalFreq (buffer: Uint8Array, sampleRate: number) {
@@ -117,8 +127,9 @@ export class PitchDetect {
         if (fundamentalFreq !== -1) {
             let note = this.findClosestNote(fundamentalFreq, PitchDetect.notesArray);
             let cents = this.findCentsOffPitch(fundamentalFreq, note.frequency);
+            console.log(this.getY(800));
             console.log(note.note);
-            this.updateNote(note.note);
+            this.updateNote(note);
             this.updateCents(cents);
         } else {
             this.updateNote("--");
@@ -144,9 +155,6 @@ export class PitchDetect {
 
         // Audible feedback
         // PitchDetect.sourceAudioNode.connect(PitchDetect.audioContext.destination);
-
-
-        //this.detectPitch();
     }
 
     turnOffMicrophone () {
@@ -176,8 +184,8 @@ export class PitchDetect {
                         });
                     };
 
-                //let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
-                //getUserMedia({audio: true}, this.streamReceived.bind(this), console.log);
+                // let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+                // getUserMedia({audio: true}, this.streamReceived.bind(this), console.log);
                 getUserMedia({audio: true}).then(this.streamReceived.bind(this)).catch(console.log);
                 this.updatePitch(PitchDetect.baseFreq);
                 PitchDetect.isMicrophoneInUse = true;
@@ -202,6 +210,7 @@ export class PitchDetect {
     }
 
     updateNote (note) {
+        PitchDetect.lastGoodNote = note;
         // console.log("note: " + note);
         // Do nothing yet
     }
