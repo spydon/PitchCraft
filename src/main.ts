@@ -1,4 +1,4 @@
-/// <reference path="../lib/phaser.d.ts"/>
+/// <reference path="../@types/phaser.d.ts"/>
 import * as Phaser from "phaser";
 
 import {BootState} from "states/Boot";

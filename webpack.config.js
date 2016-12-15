@@ -1,9 +1,11 @@
+"use strict";
+
 const path = require("path");
 const webpack = require("webpack");
+const BrowserSyncPlugin = require("browser-sync-webpack-plugin");
 
 module.exports = {
     entry: [
-        "webpack-dev-server/client?http://localhost:3000",
         path.resolve("src/main")
     ],
     output: {
@@ -19,6 +21,11 @@ module.exports = {
         ]
     },
     module: {
+        preLoaders: [{
+            test: /\.ts$/,
+            loader: "tslint",
+            exclude: /node_modules/
+        }],
         loaders: [{
             test: /\.ts$/,
             loader: "awesome-typescript",
@@ -34,30 +41,16 @@ module.exports = {
             "process.env": {
                 NODE_ENV: JSON.stringify("development")
             }
+        }),
+        new BrowserSyncPlugin({
+            host: process.env.IP || "localhost",
+            port: process.env.PORT || 3000,
+            open: false,
+            server: {
+                baseDir: path.resolve("dist")
+            }
         })
     ],
-    devServer: {
-        contentBase: path.resolve("dist"),
-        inline: true,
-        port: 3000,
-        stats: {
-            hideModules: true,
-            colors: true,
-            hash: false,
-            version: false,
-            timings: true,
-            assets: true,
-            chunks: false,
-            modules: false,
-            reasons: false,
-            children: false,
-            source: false,
-            errors: true,
-            errorDetails: true,
-            warnings: true,
-            publicPath: false
-        }
-    },
     externals: {
         "phaser": "Phaser"
     },

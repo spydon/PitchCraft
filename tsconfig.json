@@ -11,8 +11,8 @@
     }
   },
   "exclude": [
+    "@types",
     "node_modules",
-    "dist",
-    "lib"
+    "dist"
   ]
 }
