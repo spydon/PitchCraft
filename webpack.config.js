@@ -1,62 +1,65 @@
-var path = require('path')
-var webpack = require('webpack')
-var BrowserSyncPlugin = require('browser-sync-webpack-plugin')
-
-// Phaser webpack config
-var phaserModule = path.join(__dirname, '/node_modules/phaser-ce/')
-var phaser = path.join(phaserModule, 'build/custom/phaser-split.js')
-var pixi = path.join(phaserModule, 'build/custom/pixi.js')
-var p2 = path.join(phaserModule, 'build/custom/p2.js')
-
-var definePlugin = new webpack.DefinePlugin({
-  __DEV__: JSON.stringify(JSON.parse(process.env.BUILD_DEV || 'true'))
-})
+const path = require("path");
+const webpack = require("webpack");
 
 module.exports = {
-  entry: {
-    app: [
-      'babel-polyfill',
-      path.resolve(__dirname, 'src/main.js')
+    entry: [
+        "webpack-dev-server/client?http://localhost:3000",
+        path.resolve("src/main")
     ],
-    vendor: ['pixi', 'p2', 'phaser', 'webfontloader']
-  },
-  devtool: 'cheap-source-map',
-  output: {
-    pathinfo: true,
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: './dist/',
-    filename: 'bundle.js'
-  },
-  watch: true,
-  plugins: [
-    definePlugin,
-    new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.bundle.js"),
-    new BrowserSyncPlugin({
-      host: process.env.IP || 'localhost',
-      port: process.env.PORT || 3000,
-      server: {
-        baseDir: ['./', './build']
-      }
-    })
-  ],
-  module: {
-    loaders: [
-      { test: /\.js$/, loader: 'babel', include: path.join(__dirname, 'src') },
-      { test: /pixi\.js/, loader: 'expose?PIXI' },
-      { test: /phaser-split\.js$/, loader: 'expose?Phaser' },
-      { test: /p2\.js/, loader: 'expose?p2' }
-    ]
-  },
-  node: {
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty'
-  },
-  resolve: {
-    alias: {
-      'phaser': phaser,
-      'pixi': pixi,
-      'p2': p2
-    }
-  }
-}
+    output: {
+        path: path.resolve("dist"),
+        filename: "bundle.js",
+        publicPath: "/"
+    },
+    resolve: {
+        extensions: ["", ".ts", ".js", ".json"],
+        modulesDirectories: [
+            path.resolve("node_modules"),
+            path.resolve("src")
+        ]
+    },
+    module: {
+        loaders: [{
+            test: /\.ts$/,
+            loader: "awesome-typescript",
+            exclude: /node_modules/
+        }, {
+            test: /\.json$/,
+            loader: "json",
+            exclude: /node_modules/
+        }]
+    },
+    plugins: [
+        new webpack.DefinePlugin({
+            "process.env": {
+                NODE_ENV: JSON.stringify("development")
+            }
+        })
+    ],
+    devServer: {
+        contentBase: path.resolve("dist"),
+        inline: true,
+        port: 3000,
+        stats: {
+            hideModules: true,
+            colors: true,
+            hash: false,
+            version: false,
+            timings: true,
+            assets: true,
+            chunks: false,
+            modules: false,
+            reasons: false,
+            children: false,
+            source: false,
+            errors: true,
+            errorDetails: true,
+            warnings: true,
+            publicPath: false
+        }
+    },
+    externals: {
+        "phaser": "Phaser"
+    },
+    devtool: "#eval-source-map"
+};

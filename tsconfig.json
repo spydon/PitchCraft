@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "sourceMap": true,
+    "module": "commonjs",
+    "target": "es5",
+    "baseUrl": ".",
+    "typeRoots": ["./@types", "./node_modules/@types"],
+    "paths": {
+      "*": ["*", "src/*"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "lib"
+  ]
+}
