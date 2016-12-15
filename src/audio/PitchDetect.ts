@@ -4,17 +4,17 @@ export class PitchDetect {
     static frameId;
     static micStream;
     static notesArray;
-    static audioContext;
+    static audioContext: AudioContext;
     static sourceAudioNode;
-    static analyserAudioNode;
+    static analyserAudioNode: AnalyserNode;
     static baseFreq = 440;
     static currentNoteIndex = 57; // A4
     static isMicrophoneInUse = false;
 
     constructor () {
-        console.log("Do we go here");
         if (this.isAudioContextSupported()) {
-            PitchDetect.audioContext = new window.AudioContext();
+            PitchDetect.audioContext = new AudioContext();
+            console.log(PitchDetect.audioContext);
             this.turnOnMicrophone();
         } else {
             console.log("AudioContext is not supported in this browser");
@@ -112,11 +112,12 @@ export class PitchDetect {
         let buffer = new Uint8Array(PitchDetect.analyserAudioNode.fftSize);
         PitchDetect.analyserAudioNode.getByteTimeDomainData(buffer);
 
-        let fundalmentalFreq = this.findFundamentalFreq(buffer, PitchDetect.audioContext.sampleRate);
+        let fundamentalFreq = this.findFundamentalFreq(buffer, PitchDetect.audioContext.sampleRate);
 
-        if (fundalmentalFreq !== -1) {
-            let note = this.findClosestNote(fundalmentalFreq, PitchDetect.notesArray);
-            let cents = this.findCentsOffPitch(fundalmentalFreq, note.frequency);
+        if (fundamentalFreq !== -1) {
+            let note = this.findClosestNote(fundamentalFreq, PitchDetect.notesArray);
+            let cents = this.findCentsOffPitch(fundamentalFreq, note.frequency);
+            console.log(note.note);
             this.updateNote(note.note);
             this.updateCents(cents);
         } else {
@@ -128,13 +129,24 @@ export class PitchDetect {
     streamReceived (stream) {
         PitchDetect.micStream = stream;
 
+        let node = PitchDetect.audioContext.createScriptProcessor(2048, 1, 1);
+        node.onaudioprocess = this.detectPitch.bind(this);
+
+        // analyser
         PitchDetect.analyserAudioNode = PitchDetect.audioContext.createAnalyser();
         PitchDetect.analyserAudioNode.fftSize = 2048;
 
+        // input
         PitchDetect.sourceAudioNode = PitchDetect.audioContext.createMediaStreamSource(PitchDetect.micStream);
         PitchDetect.sourceAudioNode.connect(PitchDetect.analyserAudioNode);
+        PitchDetect.analyserAudioNode.connect(node);
+        node.connect(PitchDetect.audioContext.destination);
 
-        this.detectPitch();
+        // Audible feedback
+        // PitchDetect.sourceAudioNode.connect(PitchDetect.audioContext.destination);
+
+
+        //this.detectPitch();
     }
 
     turnOffMicrophone () {
@@ -153,7 +165,6 @@ export class PitchDetect {
 
     turnOnMicrophone () {
         if (!PitchDetect.isMicrophoneInUse) {
-            console.log("Supported: " + this.isGetUserMediaSupported());
             if (this.isGetUserMediaSupported()) {
                 PitchDetect.notesArray = freqTable[PitchDetect.baseFreq.toString()];
 
@@ -165,6 +176,8 @@ export class PitchDetect {
                         });
                     };
 
+                //let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+                //getUserMedia({audio: true}, this.streamReceived.bind(this), console.log);
                 getUserMedia({audio: true}).then(this.streamReceived.bind(this)).catch(console.log);
                 this.updatePitch(PitchDetect.baseFreq);
                 PitchDetect.isMicrophoneInUse = true;
@@ -184,17 +197,17 @@ export class PitchDetect {
     }
 
     updatePitch (pitch) {
-        console.log("pitch: " + pitch);
+        // console.log("pitch: " + pitch);
         // Do nothing yet
     }
 
     updateNote (note) {
-        console.log("note: " + note);
+        // console.log("note: " + note);
         // Do nothing yet
     }
 
     updateCents (cents) {
-        console.log("cents: " + cents);
+        // console.log("cents: " + cents);
         // Do nothing yet
     }
 
