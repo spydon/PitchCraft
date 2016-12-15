@@ -12,10 +12,11 @@ export class SplashState extends Phaser.State {
 
         this.load.setPreloadSprite(this.loaderBar);
 
-        this.load.image("fighter", "assets/images/fighter/topdownfighter.png");
         this.load.image("sky", "assets/images/background/sky.png");
         this.load.image("background", "assets/images/background/background.png");
         this.load.image("foreground", "assets/images/background/foreground.png");
+        this.load.image("ship", "assets/images/fighter/topdownfighter.png");
+        this.load.image("plasma", "assets/images/Earth.png");
     }
 
     create () {

@@ -38,6 +38,7 @@ export class PitchDetect {
     getY (height) {
         let notes = PitchDetect.notesArray;
         if (PitchDetect.lastGoodNote) {
+            console.log(PitchDetect.lastGoodNote);
             return (notes.indexOf(PitchDetect.lastGoodNote) / notes.length) * height;
         } else {
             return -1;
@@ -127,13 +128,12 @@ export class PitchDetect {
         if (fundamentalFreq !== -1) {
             let note = this.findClosestNote(fundamentalFreq, PitchDetect.notesArray);
             let cents = this.findCentsOffPitch(fundamentalFreq, note.frequency);
-            console.log(this.getY(800));
             console.log(note.note);
             this.updateNote(note);
             this.updateCents(cents);
         } else {
-            this.updateNote("--");
-            this.updateCents(-50);
+            /* this.updateNote("--");*/
+            /* this.updateCents(-50);*/
         }
     }
 

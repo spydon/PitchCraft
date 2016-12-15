@@ -22,6 +22,6 @@ export class Foreground extends Phaser.TileSprite {
     }
 
     update () {
-        this.tilePosition.x -= 2;
+        this.tilePosition.x -= 5;
     }
 }

@@ -8,7 +8,7 @@ import {PitchDetect} from "audio/PitchDetect";
 
 class Game extends Phaser.Game {
     constructor () {
-        super(1280, 800, Phaser.CANVAS, "game", null);
+        super(process.env.WIDTH, process.env.HEIGHT, Phaser.CANVAS, "game", null);
 
         this.state.add("Boot", BootState, false);
         this.state.add("Splash", SplashState, false);
@@ -19,4 +19,3 @@ class Game extends Phaser.Game {
 }
 
 const game = new Game();
-const pitchDetect = new PitchDetect();

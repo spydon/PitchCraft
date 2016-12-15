@@ -9,12 +9,7 @@ export class BootState extends Phaser.State {
     }
 
     preload () {
-        WebFont.load({
-            google: {
-                families: ["Nunito"]
-            },
-            active: () => this.fontsLoaded()
-        });
+        WebFont.load({google: {families: ["Nunito"]}, active: () => this.fontsLoaded()});
 
         let text = this.add.text(this.world.centerX, this.world.centerY, "loading fonts", {
             font: "16px Arial",

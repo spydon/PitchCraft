@@ -39,7 +39,9 @@ module.exports = {
     plugins: [
         new webpack.DefinePlugin({
             "process.env": {
-                NODE_ENV: JSON.stringify("development")
+                NODE_ENV: JSON.stringify("development"),
+                WIDTH: 1080,
+                HEIGHT: 768
             }
         }),
         new BrowserSyncPlugin({
