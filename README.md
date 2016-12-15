@@ -1,2 +1,2 @@
 # PitchCraft
-Game with flying objects based on sound input
+By spydon and normano64
