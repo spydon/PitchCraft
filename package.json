@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack --watch",
+    "bundle": "webpack --config webpack.prod.config.js",
     "tslint": "tslint --project tsconfig.json"
   },
   "license": "",

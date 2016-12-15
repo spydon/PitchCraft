@@ -1,35 +1,31 @@
 import * as Phaser from "phaser";
-import {Mushroom} from "sprites/Mushroom";
+import {Fighter} from "sprites/Fighter";
+import {Sky, Background, Foreground} from "sprites/Background";
 import {setResponsiveWidth} from "utils";
 
 export class GameState extends Phaser.State {
-    mushroom: Mushroom;
-
-    init () {}
-    preload () {}
+    fighter: Fighter;
 
     create () {
-        let banner = this.add.text(this.game.world.centerX, this.game.height - 30, "Phaser + ES6 + Webpack", {});
-        banner.font = "Nunito";
-        banner.fontSize = 40;
-        banner.fill = "#77BFA3";
-        banner.anchor.setTo(0.5);
+        this.game.time.advancedTiming = true;
 
-        this.mushroom = new Mushroom({
+        this.fighter = new Fighter({
             game: this.game,
             x: this.game.world.centerX,
-            y: this.game.world.centerY,
-            asset: "mushroom"
+            y: this.game.world.centerY
         });
 
-        // set the sprite width to 30% of the game width
-        setResponsiveWidth(this.mushroom, 30, this.game.world);
-        this.game.add.existing(this.mushroom);
+        setResponsiveWidth(this.fighter, 30, this.game.world);
+        this.game.add.existing(new Sky({game: this.game}));
+        this.game.add.existing(new Background({game: this.game}));
+        this.game.add.existing(new Foreground({game: this.game}));
+        this.game.add.existing(this.fighter);
     }
 
     render () {
         if (process.env.NODE_ENV === "development") {
-            this.game.debug.spriteInfo(this.mushroom, 32, 32);
+            this.game.debug.text(this.game.time.fps.toString(), 2, 14);
+            this.game.debug.spriteInfo(this.fighter, 32, 32);
         }
     }
 }

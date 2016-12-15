@@ -39,21 +39,16 @@ module.exports = {
     plugins: [
         new webpack.DefinePlugin({
             "process.env": {
-                NODE_ENV: JSON.stringify("development")
+                NODE_ENV: JSON.stringify("production")
             }
         }),
-        new BrowserSyncPlugin({
-            host: process.env.IP || "localhost",
-            port: process.env.PORT || 3000,
-            open: false,
-            ui: false,
-            server: {
-                baseDir: path.resolve("dist")
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
             }
         })
     ],
     externals: {
         "phaser": "Phaser"
-    },
-    devtool: "#eval-source-map"
+    }
 };

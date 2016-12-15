@@ -1,10 +1,9 @@
 import * as Phaser from "phaser";
 
-export class Mushroom extends Phaser.Sprite {
-    constructor ({ game, x, y, asset }) {
+export class Plasma extends Phaser.Sprite {
+    constructor ({game, x, y, asset}) {
         super(game, x, y, asset);
 
-        this.game = game;
         this.anchor.setTo(0.5);
     }
 

@@ -7,7 +7,9 @@
     "trailing-comma": [true, {"multiline": "never", "singleline": "never"}],
     "object-literal-sort-keys": false,
     "member-ordering": false,
+    "max-classes-per-file": 5,
     "no-reference": false,
+    "no-var-requires": false,
     "no-empty": false
   }
 }
