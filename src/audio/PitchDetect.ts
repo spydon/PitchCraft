@@ -35,7 +35,7 @@ export class PitchDetect {
     getY (height) {
         let notes = this.notesArray;
         if (this.lastGoodNote) {
-            return (notes.indexOf(this.lastGoodNote) / notes.length) * height;
+            return ((notes.length - notes.indexOf(this.lastGoodNote)) / notes.length) * height;
         } else {
             return height / 2;
         }
