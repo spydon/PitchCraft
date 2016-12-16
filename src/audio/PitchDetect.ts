@@ -13,7 +13,6 @@ export class PitchDetect {
     constructor () {
         if (this.isAudioContextSupported()) {
             this.audioContext = new AudioContext();
-            console.log(this.audioContext);
             this.turnOnMicrophone();
         } else {
             console.log("AudioContext is not supported in this browser");
@@ -38,7 +37,7 @@ export class PitchDetect {
         if (this.lastGoodNote) {
             return (notes.indexOf(this.lastGoodNote) / notes.length) * height;
         } else {
-            return height/2;
+            return height / 2;
         }
     }
 
@@ -125,9 +124,11 @@ export class PitchDetect {
         if (fundamentalFreq !== -1) {
             let note = this.findClosestNote(fundamentalFreq, this.notesArray);
             let cents = this.findCentsOffPitch(fundamentalFreq, note.frequency);
-            console.log(note.note);
-            this.updateNote(note);
-            this.updateCents(cents);
+            if (!note.note.includes("F8") && !note.note.includes("F#8")) {
+                console.log(note.note);
+                this.updateNote(note);
+                this.updateCents(cents);
+            }
         } else {
             /* this.updateNote("--");*/
             /* this.updateCents(-50);*/
@@ -179,8 +180,6 @@ export class PitchDetect {
                         });
                     };
 
-                // let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
-                // getUserMedia({audio: true}, this.streamReceived.bind(this), console.log);
                 getUserMedia({audio: true}).then(this.streamReceived.bind(this)).catch(console.log);
                 this.updatePitch(this.baseFreq);
                 this.isMicrophoneInUse = true;
