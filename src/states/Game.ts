@@ -166,7 +166,7 @@ export class GameState extends Phaser.State {
             forward.reset(process.env.WIDTH + forward.width / 2 - 1, process.env.HEIGHT / 2);
             forward.scale.setTo(0.1);
             forward.update = () => {
-                forward.x -= 2;
+                forward.x -= 3;
                 if (forward.x < process.env.WIDTH - 300 && !forward.destY) {
                     forward.destY = this.pitchDetect.getY(process.env.HEIGHT - forward.height) + forward.height / 2;
                 } else if (forward.destY && (forward.y < forward.destY - 10 || forward.y > forward.destY + 10)) {
@@ -183,7 +183,7 @@ export class GameState extends Phaser.State {
             backward.reset(process.env.WIDTH + backward.width / 2 - 1, process.env.HEIGHT / 2);
             backward.scale.setTo(0.1);
             backward.update = () => {
-                backward.x -= 2;
+                backward.x -= 3;
                 if (backward.x < process.env.WIDTH - 300 && !backward.destY) {
                     backward.destY = this.pitchDetect.getY(process.env.HEIGHT - backward.height) + backward.height / 2;
                 } else if (backward.destY && (backward.y < backward.destY - 10 || backward.y > backward.destY + 10)) {

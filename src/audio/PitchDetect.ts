@@ -82,7 +82,7 @@ export class PitchDetect {
             // Getting the frequency from there is trivial.
             return sampleRate / bestK;
         } else {
-            // We haven"t found a good correlation
+            // We haven't found a good correlation
             return -1;
         }
     }
