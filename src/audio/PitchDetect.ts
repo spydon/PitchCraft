@@ -35,7 +35,10 @@ export class PitchDetect {
     getY (height) {
         let notes = this.notesArray;
         if (this.lastGoodNote) {
-            return ((notes.length - notes.indexOf(this.lastGoodNote)) / notes.length) * height;
+            let pos = ((notes.length - notes.indexOf(this.lastGoodNote)) / notes.length) * height;
+            let halfScreen = height/2;
+            let spread = Math.random() * (Math.abs(halfScreen - pos) / halfScreen) * 40;
+            return pos + Math.sign(halfScreen-pos) * spread;
         } else {
             return height / 2;
         }
