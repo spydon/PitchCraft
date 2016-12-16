@@ -1,21 +1,19 @@
 const freqTable = require("./notes.json");
 
 export class PitchDetect {
-    static frameId;
-    static micStream;
-    static notesArray;
-    static audioContext: AudioContext;
-    static sourceAudioNode;
-    static analyserAudioNode: AnalyserNode;
-    static baseFreq = 440;
-    static lastGoodNote;
-    static currentNoteIndex = 57; // A4
-    static isMicrophoneInUse = false;
+    micStream;
+    notesArray;
+    audioContext: AudioContext;
+    sourceAudioNode;
+    analyserAudioNode: AnalyserNode;
+    baseFreq = 440;
+    lastGoodNote;
+    isMicrophoneInUse = false;
 
     constructor () {
         if (this.isAudioContextSupported()) {
-            PitchDetect.audioContext = new AudioContext();
-            console.log(PitchDetect.audioContext);
+            this.audioContext = new AudioContext();
+            console.log(this.audioContext);
             this.turnOnMicrophone();
         } else {
             console.log("AudioContext is not supported in this browser");
@@ -36,12 +34,11 @@ export class PitchDetect {
     }
 
     getY (height) {
-        let notes = PitchDetect.notesArray;
-        if (PitchDetect.lastGoodNote) {
-            console.log(PitchDetect.lastGoodNote);
-            return (notes.indexOf(PitchDetect.lastGoodNote) / notes.length) * height;
+        let notes = this.notesArray;
+        if (this.lastGoodNote) {
+            return (notes.indexOf(this.lastGoodNote) / notes.length) * height;
         } else {
-            return -1;
+            return height/2;
         }
     }
 
@@ -110,7 +107,7 @@ export class PitchDetect {
     }
 
     findCentsOffPitch (freq, refFreq) {
-        // We need to find how far freq is from PitchDetect.baseFreq in cents
+        // We need to find how far freq is from this.baseFreq in cents
         let log2 = 0.6931471805599453; // Math.log(2)
         let multiplicativeFactor = freq / refFreq;
 
@@ -120,13 +117,13 @@ export class PitchDetect {
     }
 
     detectPitch () {
-        let buffer = new Uint8Array(PitchDetect.analyserAudioNode.fftSize);
-        PitchDetect.analyserAudioNode.getByteTimeDomainData(buffer);
+        let buffer = new Uint8Array(this.analyserAudioNode.fftSize);
+        this.analyserAudioNode.getByteTimeDomainData(buffer);
 
-        let fundamentalFreq = this.findFundamentalFreq(buffer, PitchDetect.audioContext.sampleRate);
+        let fundamentalFreq = this.findFundamentalFreq(buffer, this.audioContext.sampleRate);
 
         if (fundamentalFreq !== -1) {
-            let note = this.findClosestNote(fundamentalFreq, PitchDetect.notesArray);
+            let note = this.findClosestNote(fundamentalFreq, this.notesArray);
             let cents = this.findCentsOffPitch(fundamentalFreq, note.frequency);
             console.log(note.note);
             this.updateNote(note);
@@ -138,43 +135,41 @@ export class PitchDetect {
     }
 
     streamReceived (stream) {
-        PitchDetect.micStream = stream;
+        this.micStream = stream;
 
-        let node = PitchDetect.audioContext.createScriptProcessor(2048, 1, 1);
+        let node = this.audioContext.createScriptProcessor(2048, 1, 1);
         node.onaudioprocess = this.detectPitch.bind(this);
 
         // analyser
-        PitchDetect.analyserAudioNode = PitchDetect.audioContext.createAnalyser();
-        PitchDetect.analyserAudioNode.fftSize = 2048;
+        this.analyserAudioNode = this.audioContext.createAnalyser();
+        this.analyserAudioNode.fftSize = 2048;
 
         // input
-        PitchDetect.sourceAudioNode = PitchDetect.audioContext.createMediaStreamSource(PitchDetect.micStream);
-        PitchDetect.sourceAudioNode.connect(PitchDetect.analyserAudioNode);
-        PitchDetect.analyserAudioNode.connect(node);
-        node.connect(PitchDetect.audioContext.destination);
+        this.sourceAudioNode = this.audioContext.createMediaStreamSource(this.micStream);
+        this.sourceAudioNode.connect(this.analyserAudioNode);
+        this.analyserAudioNode.connect(node);
+        node.connect(this.audioContext.destination);
 
         // Audible feedback
         // PitchDetect.sourceAudioNode.connect(PitchDetect.audioContext.destination);
     }
 
     turnOffMicrophone () {
-        if (PitchDetect.sourceAudioNode &&
-            PitchDetect.sourceAudioNode.mediaStream &&
-            PitchDetect.sourceAudioNode.mediaStream.stop) {
-            PitchDetect.sourceAudioNode.mediaStream.stop();
+        if (this.sourceAudioNode &&
+            this.sourceAudioNode.mediaStream &&
+            this.sourceAudioNode.mediaStream.stop) {
+            this.sourceAudioNode.mediaStream.stop();
         }
-        PitchDetect.sourceAudioNode = null;
-        this.updatePitch("--");
-        this.updateNote("--");
-        this.updateCents(-50);
-        PitchDetect.analyserAudioNode = null;
-        PitchDetect.isMicrophoneInUse = false;
+        this.sourceAudioNode = null;
+        this.updateNote(null);
+        this.analyserAudioNode = null;
+        this.isMicrophoneInUse = false;
     }
 
     turnOnMicrophone () {
-        if (!PitchDetect.isMicrophoneInUse) {
+        if (!this.isMicrophoneInUse) {
             if (this.isGetUserMediaSupported()) {
-                PitchDetect.notesArray = freqTable[PitchDetect.baseFreq.toString()];
+                this.notesArray = freqTable[this.baseFreq.toString()];
 
                 let getUserMedia = navigator.mediaDevices && navigator.mediaDevices.getUserMedia ?
                     navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices) :
@@ -187,8 +182,8 @@ export class PitchDetect {
                 // let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
                 // getUserMedia({audio: true}, this.streamReceived.bind(this), console.log);
                 getUserMedia({audio: true}).then(this.streamReceived.bind(this)).catch(console.log);
-                this.updatePitch(PitchDetect.baseFreq);
-                PitchDetect.isMicrophoneInUse = true;
+                this.updatePitch(this.baseFreq);
+                this.isMicrophoneInUse = true;
             } else {
                 console.log("It looks like this browser does not support getUserMedia.");
             }
@@ -196,11 +191,11 @@ export class PitchDetect {
     }
 
     changeBaseFreq (delta) {
-        let newBaseFreq = PitchDetect.baseFreq + delta;
+        let newBaseFreq = this.baseFreq + delta;
         if (newBaseFreq >= 432 && newBaseFreq <= 446) {
-            PitchDetect.baseFreq = newBaseFreq;
-            PitchDetect.notesArray = freqTable[PitchDetect.baseFreq.toString()];
-            this.updatePitch(PitchDetect.baseFreq);
+            this.baseFreq = newBaseFreq;
+            this.notesArray = freqTable[this.baseFreq.toString()];
+            this.updatePitch(this.baseFreq);
         }
     }
 
@@ -210,7 +205,7 @@ export class PitchDetect {
     }
 
     updateNote (note) {
-        PitchDetect.lastGoodNote = note;
+        this.lastGoodNote = note;
         // console.log("note: " + note);
         // Do nothing yet
     }
